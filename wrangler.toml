@@ -1,7 +1,13 @@
 name = "dgnote-update"
-main = "src/worker.js"
+main = "src/index.ts"
 workers_dev = true
 compatibility_date = "2025-07-24"
+
+routes = [{ pattern = "api.131920.xyz", custom_domain = true }]
+
+kv_namespaces = [
+  { binding = "KV", id = "7a449e99b8c940898c977416fc67c274", preview_id = "a4f147d4b7a24163a997b7d8871e393b" },
+]
 
 [observability]
 enabled = true
