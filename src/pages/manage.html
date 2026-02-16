@@ -4,6 +4,7 @@
 		<meta charset="UTF-8" />
 		<title>版本管理后台</title>
 		<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
 		<style>
 			body {
 				display: flex;
@@ -89,6 +90,16 @@
 				background-color: #f44336;
 			}
 
+			.btnContainer {
+				display: flex;
+				gap: 2px;
+			}
+
+			#templateBtn {
+				margin-left: auto;
+				justify-self: flex-end;
+			}
+
 			#logoutBtn {
 				align-self: flex-end;
 			}
@@ -110,9 +121,12 @@
 			<label>JSON 内容</label>
 			<textarea id="jsonValue" rows="16"></textarea>
 
-			<button id="createBtn">新建</button>
-			<button id="updateBtn">更新</button>
-			<button id="deleteBtn">删除</button>
+			<div class="btnContainer">
+				<button id="createBtn">新建</button>
+				<button id="updateBtn">更新</button>
+				<button id="deleteBtn">删除</button>
+				<button id="templateBtn">复制模版</button>
+			</div>
 		</div>
 
 		<!-- latest 管理 -->
@@ -308,9 +322,9 @@
 					},
 					error: function (xhr) {
 						showToast(xhr.responseJSON?.message || "登出失败", true);
-					}
-				})
-			})
+					},
+				});
+			});
 
 			$(document).ready(function () {
 				$.ajax({
@@ -322,7 +336,7 @@
 								showToast("已登录: " + data.user.username);
 							} else {
 								showToast("无权限", true);
-						$("input, textarea, button:not(#logoutBtn)").prop("disabled", true);
+								$("input, textarea, button:not(#logoutBtn)").prop("disabled", true);
 							}
 						} else {
 							showToast("未登录", true);
@@ -336,6 +350,34 @@
 						$("input, textarea, button:not(#logoutBtn)").prop("disabled", true);
 					},
 				});
+			});
+
+			const clipboard = new ClipboardJS("#templateBtn", {
+				text: function (trigger) {
+					return `{
+    "name": "",
+    "code": ,
+    "logs": "",
+    "links": [
+        {
+            "link": "https://www.123912.com/s/Da8RVv-MRlgv",
+            "pwd": "oqWm",
+            "desc": "123网盘"
+        },
+        {
+            "link": "https://1drv.ms/f/c/a25aea7bf332078a/IgDrjgY0ekVFToOvxVh6RwuvAZw7xMLIPlls939jnZ_o088",
+            "desc": "OneDrive"
+        },
+        {
+            "link": "https://pan.quark.cn/s/caa69bee6c07",
+            "desc": "夸克网盘"
+        }
+    ]
+}`;
+				},
+			});
+			clipboard.on("success", function (e) {
+				showToast("复制成功");
 			});
 		</script>
 	</body>
