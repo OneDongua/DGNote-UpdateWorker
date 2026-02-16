@@ -1,7 +1,8 @@
 import { Hono } from "hono"
-import { setCookie } from "hono/cookie"
+import { getCookie, setCookie } from "hono/cookie"
 import { hashPassword, comparePassword } from "../utils/password"
-import { generateToken } from "../utils/jwt"
+import { generateToken, verifyToken } from "../utils/jwt"
+import { authMiddleware } from "../middlewares/auth"
 
 const auth = new Hono<{ Bindings: Env }>()
 
@@ -76,6 +77,40 @@ auth.post("/logout", async (c) => {
   })
 
   return c.json({ message: "Logged out" })
+})
+
+// 获取当前用户信息
+auth.get("/me", async (c) => {
+  const token = getCookie(c, "token")
+
+  if (!token) {
+    return c.json({ authenticated: false })
+  }
+
+  try {
+    const payload = await verifyToken(token, c.env.JWT_SECRET)
+    const user = await c.env.DB.prepare(
+      "SELECT id, username, role FROM users WHERE id = ?"
+    )
+      .bind(payload.sub)
+      .first()
+
+    if (!user) {
+      return c.json({ authenticated: false })
+    }
+
+    return c.json({
+      authenticated: true,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role
+      }
+    })
+
+  } catch (err) {
+    return c.json({ authenticated: false })
+  }
 })
 
 export default auth

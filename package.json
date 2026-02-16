@@ -10,7 +10,7 @@
 		"type-check": "generate-types && tsc"
 	},
 	"devDependencies": {
-		"wrangler": "^4.65.0"
+		"wrangler": "^4.25.1"
 	},
 	"dependencies": {
 		"bcryptjs": "^3.0.3",

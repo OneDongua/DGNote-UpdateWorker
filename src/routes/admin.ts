@@ -2,10 +2,6 @@ import { Hono } from 'hono'
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.get("/test", async (c) => {
-  return c.text("Hello World!");
-})
-
 // 新建KV中的键值对
 app.post("/kv", async (c) => {
   const { key, value, type } = await c.req.json();

@@ -1,0 +1,342 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>版本管理后台</title>
+		<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+		<style>
+			body {
+				display: flex;
+				flex-direction: column;
+				font-family: sans-serif;
+				max-width: 800px;
+				margin: 40px auto;
+			}
+
+			input,
+			textarea {
+				width: 100%;
+				box-sizing: border-box;
+				padding: 6px;
+				margin: 4px 0;
+				border-radius: 4px;
+				border: 1px solid #ddd;
+				outline: none;
+			}
+
+			input:focus,
+			textarea:focus {
+				border: 1px solid black;
+			}
+
+			button {
+				margin: 4px;
+				padding: 6px 12px;
+				border-radius: 4px;
+				border: none;
+			}
+
+			button:hover:not([disabled]) {
+				background-color: #ddd;
+				transition: background-color 0.2s;
+				cursor: pointer;
+			}
+
+			h1 {
+				font-size: 2rem;
+				margin-bottom: 16px;
+				text-align: center;
+			}
+
+			h3 {
+				text-align: center;
+				margin: 0;
+			}
+
+			label {
+				display: block;
+			}
+
+			.section {
+				border: 1px solid #ddd;
+				padding: 16px;
+				margin-bottom: 30px;
+				border-radius: 8px;
+			}
+
+			.toast {
+				position: fixed;
+				top: 32px;
+				left: 50%;
+				padding: 8px 12px;
+				border-radius: 8px;
+				color: white;
+				font-weight: 500;
+				z-index: 1000;
+				transform: translate(-50%, -180%);
+				transition: transform 0.3s;
+			}
+
+			.toast.show {
+				transform: translate(-50%, 0);
+			}
+
+			.toast.success {
+				background-color: #4caf50;
+			}
+
+			.toast.error {
+				background-color: #f44336;
+			}
+
+			#logoutBtn {
+				align-self: flex-end;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>版本管理后台</h1>
+
+		<!-- Toast 通知容器 -->
+		<div id="toastContainer"></div>
+
+		<!-- 新建 / 更新版本 -->
+		<div class="section">
+			<h3>发布或更新版本</h3>
+
+			<label>版本号</label>
+			<input type="text" id="versionKey" />
+
+			<label>JSON 内容</label>
+			<textarea id="jsonValue" rows="16"></textarea>
+
+			<button id="createBtn">新建</button>
+			<button id="updateBtn">更新</button>
+			<button id="deleteBtn">删除</button>
+		</div>
+
+		<!-- latest 管理 -->
+		<div class="section">
+			<h3>设置 Latest 版本</h3>
+
+			<label>Latest 指向的版本号</label>
+			<input type="text" id="latestValue" />
+
+			<button id="updateLatestBtn">更新 latest</button>
+		</div>
+
+		<button id="logoutBtn">登出</button>
+
+		<script>
+			function showToast(message, isError = false) {
+				// 创建 toast 元素
+				const toast = $(`<div class="toast ${isError ? "error" : "success"}">${message}</div>`);
+
+				// 添加到容器
+				$("#toastContainer").append(toast);
+
+				// 显示 toast
+				setTimeout(() => {
+					toast.addClass("show");
+				}, 10);
+
+				// 3秒后自动隐藏并移除
+				setTimeout(() => {
+					toast.removeClass("show");
+					setTimeout(() => {
+						toast.remove();
+					}, 300);
+				}, 3000);
+			}
+
+			// 新建版本
+			$("#createBtn").click(function () {
+				const key = $("#versionKey").val().trim();
+				const valueText = $("#jsonValue").val().trim();
+
+				if (!key || !valueText) {
+					showToast("版本号和 JSON 必填", true);
+					return;
+				}
+
+				let json;
+				try {
+					json = JSON.parse(valueText);
+				} catch (e) {
+					showToast("JSON 格式错误", true);
+					return;
+				}
+
+				$.ajax({
+					url: "/admin/kv",
+					method: "POST",
+					contentType: "application/json",
+					data: JSON.stringify({
+						key: key,
+						value: json,
+						type: "json",
+					}),
+					success: function (res) {
+						showToast(res.message);
+					},
+					error: function (xhr) {
+						showToast(xhr.responseJSON?.message || "请求失败", true);
+					},
+				});
+			});
+
+			// 更新版本
+			$("#updateBtn").click(function () {
+				const key = $("#versionKey").val().trim();
+				const valueText = $("#jsonValue").val().trim();
+
+				if (!key || !valueText) {
+					showToast("版本号和 JSON 必填", true);
+					return;
+				}
+
+				let json;
+				try {
+					json = JSON.parse(valueText);
+				} catch (e) {
+					showToast("JSON 格式错误", true);
+					return;
+				}
+
+				$.ajax({
+					url: "/admin/kv/" + encodeURIComponent(key),
+					method: "PUT",
+					contentType: "application/json",
+					data: JSON.stringify({
+						value: json,
+						type: "json",
+					}),
+					success: function (res) {
+						showToast(res.message);
+					},
+					error: function (xhr) {
+						showToast(xhr.responseJSON?.message || "请求失败", true);
+					},
+				});
+			});
+
+			// 删除版本
+			$("#deleteBtn").click(function () {
+				const key = $("#versionKey").val().trim();
+
+				if (!key) {
+					showToast("版本号必填", true);
+					return;
+				}
+
+				if (!confirm("确定删除该版本？")) return;
+
+				$.ajax({
+					url: "/admin/kv/" + encodeURIComponent(key),
+					method: "DELETE",
+					success: function (res) {
+						showToast(res.message);
+					},
+					error: function (xhr) {
+						showToast(xhr.responseJSON?.message || "请求失败", true);
+					},
+				});
+			});
+
+			// 设置 latest（新建）
+			$("#setLatestBtn").click(function () {
+				const latest = $("#latestValue").val().trim();
+
+				if (!latest) {
+					showToast("请输入版本号", true);
+					return;
+				}
+
+				$.ajax({
+					url: "/admin/kv",
+					method: "POST",
+					contentType: "application/json",
+					data: JSON.stringify({
+						key: "latest",
+						value: latest,
+						type: "text",
+					}),
+					success: function (res) {
+						showToast(res.message);
+					},
+					error: function (xhr) {
+						showToast(xhr.responseJSON?.message || "请求失败", true);
+					},
+				});
+			});
+
+			// 更新 latest
+			$("#updateLatestBtn").click(function () {
+				const latest = $("#latestValue").val().trim();
+
+				if (!latest) {
+					showToast("请输入版本号", true);
+					return;
+				}
+
+				$.ajax({
+					url: "/admin/kv/latest",
+					method: "PUT",
+					contentType: "application/json",
+					data: JSON.stringify({
+						value: latest,
+						type: "text",
+					}),
+					success: function (res) {
+						showToast(res.message);
+					},
+					error: function (xhr) {
+						showToast(xhr.responseJSON?.message || "请求失败", true);
+					},
+				});
+			});
+
+			$("#logoutBtn").click(function () {
+				$.ajax({
+					url: "/auth/logout",
+					method: "POST",
+					success: function (res) {
+						showToast("登出成功");
+						setTimeout(function () {
+							window.location.href = "/login";
+						}, 1000);
+					},
+					error: function (xhr) {
+						showToast(xhr.responseJSON?.message || "登出失败", true);
+					}
+				})
+			})
+
+			$(document).ready(function () {
+				$.ajax({
+					url: "/auth/me",
+					method: "GET",
+					success: function (data) {
+						if (data.authenticated) {
+							if (data.user.role === "admin") {
+								showToast("已登录: " + data.user.username);
+							} else {
+								showToast("无权限", true);
+						$("input, textarea, button:not(#logoutBtn)").prop("disabled", true);
+							}
+						} else {
+							showToast("未登录", true);
+							setTimeout(function () {
+								window.location.href = "/login";
+							}, 1000);
+						}
+					},
+					error: function (xhr) {
+						showToast("请求登录状态失败", true);
+						$("input, textarea, button:not(#logoutBtn)").prop("disabled", true);
+					},
+				});
+			});
+		</script>
+	</body>
+</html>

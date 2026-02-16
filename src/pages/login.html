@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>登录</title>
+		<script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+		<style>
+			body {
+				font-family: sans-serif;
+				max-width: 400px;
+				margin: 100px auto;
+			}
+
+			input {
+				width: 100%;
+				padding: 8px;
+				margin-bottom: 12px;
+				box-sizing: border-box;
+				border-radius: 4px;
+				border: 1px solid #ddd;
+				box-sizing: border-box;
+				outline: none;
+			}
+
+      input:focus {
+				border: 1px solid black;
+			}
+
+			button {
+				width: 100%;
+				padding: 8px;
+				border-radius: 4px;
+				border: none;
+        font-size: 1rem;
+			}
+
+			button:hover {
+				background-color: #ddd;
+				transition: background-color 0.2s;
+				cursor: pointer;
+			}
+
+			.error {
+				color: red;
+				margin-top: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" id="username" placeholder="用户名" />
+		<input type="password" id="password" placeholder="密码" />
+		<button id="loginBtn">登录</button>
+
+		<div id="message"></div>
+
+		<script>
+			function showError(msg) {
+				$("#message").html(`<div class="error">${msg}</div>`);
+			}
+
+			// 页面加载时检查是否已登录
+			$(document).ready(function () {
+				$.ajax({
+					url: "/auth/me",
+					method: "GET",
+					xhrFields: { withCredentials: true },
+					success: function (res) {
+						if (res.authenticated) {
+							window.location.href = "/manage";
+						}
+					},
+				});
+			});
+
+			// 点击登录
+			$("#loginBtn").click(function () {
+				const username = $("#username").val().trim();
+				const password = $("#password").val().trim();
+
+				if (!username || !password) {
+					showError("用户名和密码不能为空");
+					return;
+				}
+
+				$.ajax({
+					url: "/auth/login",
+					method: "POST",
+					contentType: "application/json",
+					data: JSON.stringify({
+						username: username,
+						password: password,
+					}),
+					xhrFields: { withCredentials: true },
+
+					success: function () {
+						window.location.href = "/manage";
+					},
+
+					error: function (xhr) {
+						const msg = xhr.responseJSON?.error || "登录失败";
+						showError(msg);
+					},
+				});
+			});
+
+			// 回车登录
+			$("#password").keypress(function (e) {
+				if (e.which === 13) {
+					$("#loginBtn").click();
+				}
+			});
+		</script>
+	</body>
+</html>

@@ -11,5 +11,5 @@ export async function generateToken(payload: any, secret: string) {
 }
 
 export async function verifyToken(token: string, secret: string) {
-  return await verify(token, secret)
+  return await verify(token, secret, "HS256")
 }
