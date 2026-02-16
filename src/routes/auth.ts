@@ -17,9 +17,9 @@ auth.post("/register", async (c) => {
 
   try {
     await c.env.DB.prepare(
-      "INSERT INTO users (username, password) VALUES (?, ?)"
+      "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
     )
-      .bind(username, hashed)
+      .bind(username, hashed, "user")
       .run()
   } catch {
     return c.json({ error: "User exists" }, 400)
@@ -49,7 +49,11 @@ auth.post("/login", async (c) => {
   }
 
   const token = await generateToken(
-    { sub: user.id, username: user.username },
+    {
+      sub: user.id,
+      username: user.username,
+      role: user.role
+    },
     c.env.JWT_SECRET
   )
 

@@ -4,7 +4,7 @@ import { cors } from 'hono/cors'
 import update from './routes/update';
 import auth from './routes/auth';
 import admin from './routes/admin';
-import { authMiddleware } from './middlewares/auth';
+import { adminOnlyMiddleware, authMiddleware } from './middlewares/auth';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -12,7 +12,8 @@ app.use("*", cors())
 
 app.use(
   "/admin/*",
-  authMiddleware
+  authMiddleware,
+  adminOnlyMiddleware
 )
 
 app.route("/auth", auth)
