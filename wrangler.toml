@@ -5,9 +5,20 @@ compatibility_date = "2025-07-24"
 
 routes = [{ pattern = "api.131920.xyz", custom_domain = true }]
 
-kv_namespaces = [
-  { binding = "KV", id = "7a449e99b8c940898c977416fc67c274", preview_id = "a4f147d4b7a24163a997b7d8871e393b" },
-]
+[[kv_namespaces]]
+binding = "KV"
+id = "7a449e99b8c940898c977416fc67c274"
+preview_id = "a4f147d4b7a24163a997b7d8871e393b"
+
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dgnote-update-auth"
+database_id = "54b57a9c-ad29-4543-b68c-7139b57aa579"
+preview_database_id = "4d4b3d0f-3ba9-4d00-ac36-7527d50ac1fe"
 
 [observability]
 enabled = true
+
+[placement]
+mode = "smart"
