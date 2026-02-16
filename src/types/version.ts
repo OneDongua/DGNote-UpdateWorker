@@ -6,6 +6,7 @@ export interface DownloadLink {
 
 export interface VersionInfo {
   name: string;
+  date?: number;
   code: number;
   logs: string;
   links: DownloadLink[];
