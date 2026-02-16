@@ -192,11 +192,11 @@
 				body {
 					padding: 16px;
 				}
-				
+
 				.login-card {
 					padding: 32px 24px;
 				}
-				
+
 				h1 {
 					font-size: 1.75rem;
 				}
@@ -229,10 +229,13 @@
 		</div>
 
 		<script>
-			function showMessage(msg, isSuccess = false) {
-				const messageEl = $("#message");
-				const className = isSuccess ? "success" : "error";
-				messageEl.html(`<div class="${className}">${msg}</div>`);
+			function showMessage(msg, isSuccess) {
+				if (isSuccess === undefined) {
+					isSuccess = false;
+				}
+				var messageEl = $("#message");
+				var className = isSuccess ? "success" : "error";
+				messageEl.html('<div class="' + className + '">' + msg + "</div>");
 			}
 
 			function clearMessage() {
@@ -248,14 +251,14 @@
 					success: function (res) {
 						if (res.authenticated) {
 							showMessage("已登录，正在跳转...", true);
-							setTimeout(() => {
+							setTimeout(function () {
 								window.location.href = "/manage";
 							}, 1000);
 						}
 					},
 					error: function () {
 						// 未登录状态，正常显示登录页面
-					}
+					},
 				});
 			});
 
@@ -267,8 +270,8 @@
 
 			// 点击登录按钮
 			function handleLogin() {
-				const username = $("#username").val().trim();
-				const password = $("#password").val().trim();
+				var username = $("#username").val().trim();
+				var password = $("#password").val().trim();
 
 				if (!username || !password) {
 					showMessage("用户名和密码不能为空");
@@ -276,8 +279,8 @@
 				}
 
 				// 禁用按钮并显示加载状态
-				const loginBtn = $("#loginBtn");
-				const originalText = loginBtn.text();
+				var loginBtn = $("#loginBtn");
+				var originalText = loginBtn.text();
 				loginBtn.prop("disabled", true).text("登录中...");
 
 				clearMessage();
@@ -294,16 +297,16 @@
 
 					success: function () {
 						showMessage("登录成功，正在跳转...", true);
-						setTimeout(() => {
+						setTimeout(function () {
 							window.location.href = "/manage";
 						}, 1000);
 					},
 
 					error: function (xhr) {
-						const msg = xhr.responseJSON?.error || "登录失败，请检查用户名和密码";
+						var msg = (xhr.responseJSON && xhr.responseJSON.error) || "登录失败，请检查用户名和密码";
 						showMessage(msg);
 						loginBtn.prop("disabled", false).text(originalText);
-						
+
 						// 清空密码框
 						$("#password").val("");
 					},

@@ -247,23 +247,23 @@
 				body {
 					padding: 16px;
 				}
-				
+
 				.container {
 					max-width: 100%;
 				}
-				
+
 				h1 {
 					font-size: 2rem;
 				}
-				
+
 				.section {
 					padding: 24px;
 				}
-				
+
 				.btn-container {
 					flex-direction: column;
 				}
-				
+
 				button {
 					width: 100%;
 				}
@@ -304,10 +304,13 @@
 					</div>
 
 					<label for="versionKey">版本号</label>
-					<input type="text" id="versionKey" placeholder="例如: v1.2.3" />
+					<input type="text" id="versionKey" placeholder="例如: 100" />
 
 					<label for="jsonValue">JSON 配置内容</label>
-					<textarea id="jsonValue" rows="16" placeholder='{
+					<textarea
+						id="jsonValue"
+						rows="16"
+						placeholder='{
     "name": "版本名称",
     "code": 123,
     "logs": "更新日志",
@@ -318,7 +321,8 @@
             "desc": "描述"
         }
     ]
-}'></textarea>
+}'
+					></textarea>
 
 					<div class="btn-container">
 						<button id="createBtn" class="btn-primary">新建版本</button>
@@ -362,37 +366,40 @@
 
 				<!-- 登出区域 -->
 				<div class="logout-section">
-					<button id="logoutBtn" class="btn-danger">安全登出</button>
+					<button id="logoutBtn" class="btn-danger">登出</button>
 				</div>
 			</main>
 		</div>
 
 		<script>
-			function showToast(message, isError = false) {
+			function showToast(message, isError) {
+				if (isError === undefined) {
+					isError = false;
+				}
 				// 创建 toast 元素
-				const toast = $(`<div class="toast ${isError ? "error" : "success"}">${message}</div>`);
+				var toast = $('<div class="toast ' + (isError ? "error" : "success") + '">' + message + '</div>');
 
 				// 添加到容器
 				$("#toastContainer").append(toast);
 
 				// 显示 toast
-				setTimeout(() => {
+				setTimeout(function () {
 					toast.addClass("show");
 				}, 10);
 
-				// 3秒后自动隐藏并移除
-				setTimeout(() => {
+				// 2秒后自动隐藏并移除
+				setTimeout(function () {
 					toast.removeClass("show");
-					setTimeout(() => {
+					setTimeout(function () {
 						toast.remove();
 					}, 300);
-				}, 3000);
+				}, 2000);
 			}
 
 			// 新建版本
 			$("#createBtn").click(function () {
-				const key = $("#versionKey").val().trim();
-				const valueText = $("#jsonValue").val().trim();
+				var key = $("#versionKey").val().trim();
+				var valueText = $("#jsonValue").val().trim();
 
 				if (!key || !valueText) {
 					showToast("版本号和 JSON 必填", true);
@@ -420,15 +427,15 @@
 						showToast(res.message);
 					},
 					error: function (xhr) {
-						showToast(xhr.responseJSON?.message || "请求失败", true);
+						showToast((xhr.responseJSON && xhr.responseJSON.message) || "请求失败", true);
 					},
 				});
 			});
 
 			// 更新版本
 			$("#updateBtn").click(function () {
-				const key = $("#versionKey").val().trim();
-				const valueText = $("#jsonValue").val().trim();
+				var key = $("#versionKey").val().trim();
+				var valueText = $("#jsonValue").val().trim();
 
 				if (!key || !valueText) {
 					showToast("版本号和 JSON 必填", true);
@@ -455,14 +462,14 @@
 						showToast(res.message);
 					},
 					error: function (xhr) {
-						showToast(xhr.responseJSON?.message || "请求失败", true);
+						showToast((xhr.responseJSON && xhr.responseJSON.message) || "请求失败", true);
 					},
 				});
 			});
 
 			// 删除版本
 			$("#deleteBtn").click(function () {
-				const key = $("#versionKey").val().trim();
+				var key = $("#versionKey").val().trim();
 
 				if (!key) {
 					showToast("版本号必填", true);
@@ -478,14 +485,14 @@
 						showToast(res.message);
 					},
 					error: function (xhr) {
-						showToast(xhr.responseJSON?.message || "请求失败", true);
+						showToast((xhr.responseJSON && xhr.responseJSON.message) || "请求失败", true);
 					},
 				});
 			});
 
 			// 设置 latest（新建）
 			$("#setLatestBtn").click(function () {
-				const latest = $("#latestValue").val().trim();
+				var latest = $("#latestValue").val().trim();
 
 				if (!latest) {
 					showToast("请输入版本号", true);
@@ -505,14 +512,14 @@
 						showToast(res.message);
 					},
 					error: function (xhr) {
-						showToast(xhr.responseJSON?.message || "请求失败", true);
+						showToast((xhr.responseJSON && xhr.responseJSON.message) || "请求失败", true);
 					},
 				});
 			});
 
 			// 更新 latest
 			$("#updateLatestBtn").click(function () {
-				const latest = $("#latestValue").val().trim();
+				var latest = $("#latestValue").val().trim();
 
 				if (!latest) {
 					showToast("请输入版本号", true);
@@ -531,7 +538,7 @@
 						showToast(res.message);
 					},
 					error: function (xhr) {
-						showToast(xhr.responseJSON?.message || "请求失败", true);
+						showToast((xhr.responseJSON && xhr.responseJSON.message) || "请求失败", true);
 					},
 				});
 			});
@@ -547,7 +554,7 @@
 						}, 1000);
 					},
 					error: function (xhr) {
-						showToast(xhr.responseJSON?.message || "登出失败", true);
+						showToast((xhr.responseJSON && xhr.responseJSON.message) || "登出失败", true);
 					},
 				});
 			});
@@ -580,7 +587,7 @@
 
 			// 文本换行符转换功能
 			$("#convertLineBreaksBtn").click(function () {
-				const originalText = $("#textConverter").val();
+				var originalText = $("#textConverter").val();
 
 				if (!originalText.trim()) {
 					showToast("请输入要转换的文本", true);
@@ -588,7 +595,7 @@
 				}
 
 				// 将换行符替换为 \n
-				const convertedText = originalText.replace(/\r\n/g, "\\n").replace(/\n/g, "\\n").replace(/\r/g, "\\n");
+				var convertedText = originalText.replace(/\r\n/g, "\\n").replace(/\n/g, "\\n").replace(/\r/g, "\\n");
 
 				$("#textConverter").val(convertedText);
 				showToast("转换完成");
@@ -600,8 +607,8 @@
 				showToast("已清空");
 			});
 
-			// 初始化 clipboard.js for 文本转换器
-			const converterClipboard = new ClipboardJS("#copyConvertedBtn");
+			// 文本转换器
+			var converterClipboard = new ClipboardJS("#copyConvertedBtn");
 			converterClipboard.on("success", function (e) {
 				showToast("复制成功");
 			});
@@ -609,7 +616,8 @@
 				showToast("复制失败", true);
 			});
 
-			const templateClipboard = new ClipboardJS("#templateBtn", {
+			// 复制模版
+			var templateClipboard = new ClipboardJS("#templateBtn", {
 				text: function (trigger) {
 					return `{
     "name": "",
