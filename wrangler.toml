@@ -1,7 +1,8 @@
 name = "dgnote-update"
 main = "src/index.ts"
 workers_dev = true
-compatibility_date = "2025-07-24"
+compatibility_flags = [ "nodejs_compat" ]
+compatibility_date = "2026-02-17"
 
 routes = [{ pattern = "api.131920.xyz", custom_domain = true }]
 
@@ -22,3 +23,7 @@ enabled = true
 
 [placement]
 mode = "smart"
+
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "6c0b2914947f4450ae11acfd8285bf73"

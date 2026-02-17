@@ -10,10 +10,12 @@
 		"type-check": "generate-types && tsc"
 	},
 	"devDependencies": {
+		"@types/pg": "^8.16.0",
 		"wrangler": "^4.25.1"
 	},
 	"dependencies": {
 		"bcryptjs": "^3.0.3",
-		"hono": "^4.11.9"
+		"hono": "^4.11.9",
+		"pg": "^8.18.0"
 	}
 }
