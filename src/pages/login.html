@@ -188,13 +188,30 @@
 			}
 
 			/* 响应式设计 */
-			@media (max-width: 480px) {
+			@media (max-width: 1000px) {
+				* {
+					font-size: 2rem;
+					padding: 8px;
+				}
+
 				body {
 					padding: 16px;
 				}
 
+				input {
+					padding: 24px;
+				}
+
+				.login-btn {
+					padding: 24px;
+				}
+
+				.login-container {
+					max-width: 100%;
+				}
+
 				.login-card {
-					padding: 32px 24px;
+					padding: 32px;
 				}
 
 				h1 {

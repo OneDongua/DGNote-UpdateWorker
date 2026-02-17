@@ -243,9 +243,22 @@
 			}
 
 			/* 响应式设计 */
-			@media (max-width: 768px) {
+			@media (max-width: 1000px) {
+				* {
+					font-size: 2rem;
+					padding: 8px;
+				}
+
 				body {
 					padding: 16px;
+				}
+
+				button {
+					padding: 24px;
+				}
+
+				input {
+					padding: 24px;
 				}
 
 				.container {
@@ -257,7 +270,7 @@
 				}
 
 				.section {
-					padding: 24px;
+					padding: 32px;
 				}
 
 				.btn-container {
@@ -282,6 +295,7 @@
 			}
 
 			.main-content {
+				padding: 0;
 				animation: fadeInUp 0.6s ease-out;
 			}
 		</style>
