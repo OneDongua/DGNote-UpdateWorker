@@ -26,4 +26,5 @@ mode = "smart"
 
 [[hyperdrive]]
 binding = "HYPERDRIVE"
-id = "6c0b2914947f4450ae11acfd8285bf73"
+#id = "6c0b2914947f4450ae11acfd8285bf73"
+id = "43c41d4140944dde9b072403fceb9280"
